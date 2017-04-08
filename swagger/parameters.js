@@ -2,23 +2,22 @@
 
 const joi2swagger = require('joi-to-swagger')
 
-function parse(object, location, parameters = []) {
-  for (let property in object) {
-    let schema = object[property]
+function parse(definitions, predefinitions, location, parameters = []) {
+  for (let property in definitions) {
+    let schema = definitions[property]
     if (!schema.isJoi) {
-      parse(schema, property, parameters)
+      parse(schema, predefinitions, property, parameters)
     } else {
-      let {swagger} = joi2swagger(schema)
+      let {swagger} = joi2swagger(schema, predefinitions)
       let parameter = Object.assign({
         name: property,
         in: location || property,
         description: schema._description || undefined,
-        required: schema._flags.presence === 'required' || undefined
+        required: schema._flags.presence === 'required' || undefined,
+        schema: swagger.$ref ? {$ref: swagger.$ref} : undefined
       }, swagger)
-      if (parameter['$ref']) {
-        parameter.schema = {'$ref': swagger['$ref']}
-        delete parameter['$ref']
-      }
+
+      delete parameter['$ref']
       parameters.push(parameter)
     }
   }

@@ -12,7 +12,9 @@ let path2schemas = path.resolve(process.cwd(), apiPath || 'api', 'schemas')
 let path2swagger = path.resolve(process.cwd(), apiPath || 'api', 'swagger.json')
 
 let schemas = requireDirectory(module, path2schemas)
-let swagger = generateSwagger(schemas, {info: {name: 'Swagger API'}})
+let definitions = {}
+let parameters = {info: {name: 'Swagger API'}}
+let swagger = generateSwagger(schemas, definitions, parameters)
 let swaggerFile = JSON.stringify(swagger, null, 3)
 
 fs.writeFile(path2swagger, swaggerFile, {flag: 'w+'}, (err, data) => {

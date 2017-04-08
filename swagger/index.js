@@ -8,17 +8,17 @@ const utils = requireDirectory(module)
 const underscores = /\/_([a-zA-Z0-9\_\-]+)/g // path segments starting with _
 const curlybraces = '/{$1}' // wrap URL parameters in curly braces {}
 
-function convertSchemas(schemas = {}, mapping = {}, path = '/') {
+function convertSchemas(schemas = {}, predefinitions, mapping = {}, path = '/') {
   let schemap = {}
 
   for (let segment in schemas) {
     if (schemas.hasOwnProperty(segment)) {
       let {definitions, description} = (schemas[segment] || {})
       if (typeof definitions !== 'object') {
-        path = path.replace(underscores, curlybraces)
-        convertSchemas(schemas[segment], mapping, pathjoin(path, segment))
+        path = pathjoin(path.replace(underscores, curlybraces), segment)
+        convertSchemas(schemas[segment], predefinitions, mapping, path)
       } else {
-        let swagger = bundleFields({definitions, description})
+        let swagger = bundleFields(definitions, predefinitions, description)
         schemap[segment] = swagger
       }
     }
@@ -28,11 +28,13 @@ function convertSchemas(schemas = {}, mapping = {}, path = '/') {
   return mapping
 }
 
-function bundleFields({definitions, description = ''}) {
-  let swagger = {description}
+function bundleFields(definitions, predefinitions, description = '') {
   let required = utils.parameters.required(definitions.request)
-  swagger.parameters = utils.parameters.parse(definitions.request)
-  swagger.responses = utils.responses.parse(definitions.responses)
+  let swagger = {
+    description,
+    parameters: utils.parameters.parse(definitions.request, predefinitions),
+    responses: utils.responses.parse(definitions.responses, predefinitions)
+  }
 
   for (let parameter of swagger.parameters) {
     if (required.indexOf(parameter.name) >= 0) parameter.required = true
@@ -41,7 +43,8 @@ function bundleFields({definitions, description = ''}) {
   return swagger
 }
 
-module.exports = (schemas, params = {}) => {
-  params.paths = convertSchemas(schemas)
-  return utils.document.build(params)
+module.exports = (schemas, definitions = {}, parameters = {}) => {
+  parameters.paths = convertSchemas(schemas, definitions)
+  parameters.definitions = utils.definitions.parse(definitions)
+  return utils.document.build(parameters)
 }
