@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "description": "Swagger documentation tool for microapi-based projects using Joi schemas.",
   "main": "index.js",
+  "bin": {
+    "microjoi": "./index.js"
+  },
   "scripts": {
     "test": "npm test"
   },
-  "bin": {
-    "microjoi": "./index.js"
+  "dependencies": {
+    "joi": "^10.4.1",
+    "joi-to-swagger": "^1.1.0",
+    "require-directory": "^2.1.1"
   },
   "repository": {
     "type": "git",
@@ -22,10 +27,5 @@
   "bugs": {
     "url": "https://github.com/jorgezaccaro/microjoi/issues"
   },
-  "homepage": "https://github.com/jorgezaccaro/microjoi#readme",
-  "dependencies": {
-    "joi": "^10.4.1",
-    "joi-to-swagger": "^1.1.0",
-    "require-directory": "^2.1.1"
-  }
+  "homepage": "https://github.com/jorgezaccaro/microjoi#readme"
 }
