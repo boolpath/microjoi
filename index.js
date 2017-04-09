@@ -4,18 +4,28 @@
 const fs = require('fs')
 const path = require('path')
 const requireDirectory = require('require-directory')
+const joi = require('joi')
+
 const generateSwagger = require('./swagger')
-const joi = global.joi = require('joi')
 
-let [,, apiPath] = process.argv
-let path2schemas = path.resolve(process.cwd(), apiPath || 'api', 'schemas')
-let path2swagger = path.resolve(process.cwd(), apiPath || 'api', 'swagger.json')
+const [,, apiPath, definitionsPath] = process.argv
+const cwd = process.cwd()
+const api = apiPath || 'api'
+const def = definitionsPath || api
 
-let schemas = requireDirectory(module, path2schemas)
+const path2schemas = path.resolve(cwd, api, 'schemas')
+const path2swagger = path.resolve(cwd, api, 'swagger.json')
+const path2defines = path.resolve(cwd, def, 'definitions.js')
+const schemas = requireDirectory(module, path2schemas)
+
 let definitions = {}
-let parameters = {info: {name: 'Swagger API'}}
-let swagger = generateSwagger(schemas, definitions, parameters)
-let swaggerFile = JSON.stringify(swagger, null, 3)
+let parameters = {}
+
+try {parameters  = require(path2swagger)} catch (error) {/*not found*/}
+try {definitions = require(path2defines)} catch (error) {/*not found*/}
+
+const swagger = generateSwagger(schemas, definitions, parameters)
+const swaggerFile = JSON.stringify(swagger, null, 3)
 
 fs.writeFile(path2swagger, swaggerFile, {flag: 'w+'}, (err, data) => {
   if (err) throw err
