@@ -1,5 +1,6 @@
 'use strict'
 
+const joi = require('joi')
 const joi2swagger = require('joi-to-swagger')
 
 function parse(definitions, predefinitions) {
