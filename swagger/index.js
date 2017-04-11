@@ -37,7 +37,10 @@ function bundleFields(definitions, predefinitions, description = '') {
   }
 
   for (let parameter of swagger.parameters) {
-    if (required.indexOf(parameter.name) >= 0) parameter.required = true
+    if (required.indexOf(parameter.name) >= 0 &&
+      typeof parameter.required !== 'boolean') {
+      parameter.required = parameter.required || true
+    }
   }
 
   return swagger
