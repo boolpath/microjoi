@@ -7,7 +7,11 @@ function parse(definitions) {
 
   for (let property in setClassNames(definitions)){
     let {definitions: previous} = joi2swagger(definitions[property], swagger)
-    Object.assign(swagger, previous)
+    for (let definition in previous) {
+      if (!swagger[definition] && property === definition) {
+        swagger[definition] = previous[definition]
+      }
+    }
   }
 
   return swagger
@@ -17,7 +21,7 @@ function setClassNames(definitions) {
   for (let property in definitions) {
     let definition = definitions[property]
     let metaClassName = definition._meta.find(meta => meta.className)
-    if (definition && definition.isJoi && !metaClassName) {
+    if (definition.isJoi && !metaClassName) {
       definitions[property] = definition.meta({className: property})
     }
   }
