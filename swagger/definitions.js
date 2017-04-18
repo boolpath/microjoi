@@ -20,6 +20,8 @@ function parse(definitions) {
 function setClassNames(definitions) {
   for (let property in definitions) {
     let definition = definitions[property]
+    if (!definition.isJoi) continue
+
     let metaClassName = definition._meta.find(meta => meta.className)
     if (definition.isJoi && !metaClassName) {
       definitions[property] = definition.meta({className: property})
