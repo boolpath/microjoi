@@ -1,6 +1,6 @@
 {
   "name": "microjoi",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Swagger documentation tool for microapi-based projects using Joi schemas.",
   "main": "index.js",
   "bin": {
