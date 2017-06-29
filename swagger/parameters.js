@@ -25,7 +25,7 @@ function parse(definitions, predefinitions, location, parameters = []) {
   return parameters
 }
 
-function required(request, requireds = []) {
+function required(request = {}, requireds = []) {
   let requestSwagger = joi2swagger(joi.object().keys(request)).swagger
   for (let location in requestSwagger.properties) {
     requireds.push(...(requestSwagger.properties[location].required || []))
